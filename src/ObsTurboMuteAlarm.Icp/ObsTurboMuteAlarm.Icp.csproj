@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Optional WinWing ViperAce ICP support. The app loads ObsTurboMuteAlarm.Icp.dll (and HidSharp.dll)
+    from its own folder at runtime if present; without them the app runs with monitor popups only.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>ObsTurboMuteAlarm.Icp</RootNamespace>
+    <Version>1.0.0</Version>
+    <Product>OBS Turbo Mute Alarm</Product>
+    <Company>Mursu-soft</Company>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HidSharp" Version="2.6.4" />
+    <!-- The app itself provides these types at runtime; don't copy it next to the plugin. -->
+    <ProjectReference Include="..\ObsTurboMuteAlarm\ObsTurboMuteAlarm.csproj" Private="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ObsTurboMuteAlarm.Tests" />
+  </ItemGroup>
+
+  <!-- For development: drop the plugin next to the Debug app so F5/dotnet run has ICP support. -->
+  <Target Name="CopyPluginToAppOutput" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
+    <Copy SourceFiles="$(TargetPath);$(OutDir)HidSharp.dll"
+          DestinationFolder="$(MSBuildThisFileDirectory)..\ObsTurboMuteAlarm\bin\$(Configuration)\$(TargetFramework)\"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

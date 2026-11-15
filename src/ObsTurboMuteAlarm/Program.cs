@@ -1,6 +1,5 @@
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using ObsTurboMuteAlarm.Icp;
 using ObsTurboMuteAlarm.Obs;
 
 namespace ObsTurboMuteAlarm;
@@ -8,6 +7,15 @@ namespace ObsTurboMuteAlarm;
 internal static class Program
 {
     private const string AppName = "OBS Turbo Mute Alarm";
+
+    private static readonly Lazy<Icon?> LazyAppIcon = new(() =>
+    {
+        try { return Environment.ProcessPath is { } p ? Icon.ExtractAssociatedIcon(p) : null; }
+        catch { return null; }
+    });
+
+    /// <summary>The exe's icon (Mursu-soft walrus), for window title bars.</summary>
+    internal static Icon? AppIcon => LazyAppIcon.Value;
 
     [STAThread]
     private static int Main(string[] args)
@@ -17,7 +25,7 @@ internal static class Program
         if (Flag("--preview-ded"))
         {
             AttachConsole(AttachParentProcess);
-            Console.Write(DedRenderer.ToAscii(DedRenderer.BigMute(inverted: false)));
+            Console.Write(IcpSupport.Plugin?.PreviewAscii() ?? "ICP support is not installed.\n");
             return 0;
         }
 
@@ -37,7 +45,10 @@ internal static class Program
         if (Flag("--check-obs"))
             return CheckObs(settings);
 
-        using var mutex = new Mutex(true, @"Local\ObsTurboMuteAlarm", out bool isFirst);
+        if (Flag("--exit"))
+            return RequestExit();
+
+        using var mutex = new Mutex(true, MutexName, out bool isFirst);
         if (!isFirst)
         {
             MessageBox.Show($"{AppName} is already running (see the system tray).", AppName,
@@ -52,8 +63,28 @@ internal static class Program
         Log.Info("Started.");
         var app = new TrayApp(settings, path, firstRun: !existed, showTestWarning: Flag("--test"));
         if (Flag("--help")) UI.HelpForm.ShowHelp();
+        using var exitEvent = new EventWaitHandle(false, EventResetMode.AutoReset, ExitEventName);
+        var exitWait = ThreadPool.RegisterWaitForSingleObject(exitEvent, (_, _) => app.RequestExit(), null, Timeout.Infinite, executeOnlyOnce: true);
         Application.Run(app);
+        exitWait.Unregister(null);
         return 0;
+    }
+
+    private const string MutexName = @"Local\ObsTurboMuteAlarm";
+    private const string ExitEventName = @"Local\ObsTurboMuteAlarm.Exit";
+
+    /// <summary>Asks a running instance to exit (used by the installer) and waits up to 10 s for it.</summary>
+    private static int RequestExit()
+    {
+        if (!EventWaitHandle.TryOpenExisting(ExitEventName, out var ev)) return 0;
+        using (ev) ev.Set();
+        for (int i = 0; i < 100; i++)
+        {
+            if (!Mutex.TryOpenExisting(MutexName, out var m)) return 0;
+            m.Dispose();
+            Thread.Sleep(100);
+        }
+        return 1;
     }
 
     /// <summary>Connects to OBS once, prints the audio sources and their state, and exits. Never touches the ICP.</summary>

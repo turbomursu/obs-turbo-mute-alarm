@@ -16,6 +16,9 @@ The warning disappears as soon as every watched source is unmuted.
 
 > **100% vibe coded in Claude Opus 5.5. Use entirely at your own risk.**
 
+**[⬇ Download the installer](https://github.com/turbomursu/obs-turbo-mute-alarm/releases/latest)**
+· [Install and operating instructions](INSTRUCTIONS.md)
+
 ## Features
 
 - Connects to OBS's built-in WebSocket server (OBS 28 or later) and reacts to mute changes
@@ -36,11 +39,26 @@ The warning disappears as soon as every watched source is unmuted.
 
 ## Requirements
 
-- Windows 10 or 11
-- [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) (x64), or use a
-  self-contained build (see [Building](#building))
+- Windows 10 or 11 (x64)
 - OBS Studio 28 or later
 - Optional: WinWing ViperAce ICP (USB VID `0x4098`, PID `0xBF06`)
+
+The installer includes everything else (no separate .NET install needed).
+
+## Install
+
+1. Download `ObsTurboMuteAlarm-Setup-<version>.exe` from
+   [Releases](https://github.com/turbomursu/obs-turbo-mute-alarm/releases/latest) and run it.
+   It isn't code-signed: if Windows SmartScreen appears, click **More info → Run anyway**.
+2. Choose the install folder. Everything is installed in that folder. No admin rights are
+   needed unless you pick a protected folder such as Program Files.
+3. Choose **Monitor popups only** (default) or **Monitor popups and WinWing ViperAce ICP
+   display**. ICP support (the plugin and the HID library) is only installed if you choose it.
+   Run the installer again later to add or remove it.
+4. Optionally create a desktop shortcut and start the app with Windows.
+
+**Uninstall:** Windows Settings → Apps → Installed apps → OBS Turbo Mute Alarm → Uninstall. The
+uninstaller asks whether to also delete your settings and log.
 
 ## Setup
 
@@ -58,8 +76,8 @@ The warning disappears as soon as every watched source is unmuted.
 4. **2. Displays.** Your monitors are drawn in the same arrangement as in Windows display
    settings. Click a monitor to select it (red = the warning pops up there); click it again to
    deselect it. **Identify monitors** shows each monitor's number on the screen itself. Tick
-   **WinWing ViperAce ICP** to also flash the warning on the ICP; the window shows whether the
-   ICP is connected.
+   **WinWing ViperAce ICP** to also flash the warning on the ICP (needs the optional ICP
+   support component); the window shows whether the ICP is connected.
 5. Click **Apply & test (5 s)** to see the warning, then **Save**.
 
 The app then lives in the system tray. Click the tray icon to open **Choose inputs and
@@ -109,22 +127,30 @@ The log is `%LOCALAPPDATA%\ObsTurboMuteAlarm\log.txt`.
 | `--test` | Starts normally and shows the warning for 5 seconds on the configured outputs. |
 | `--help` | Starts normally and opens the Help window. |
 | `--check-obs` | Connects to OBS once, prints every source with audio (with UUID and mute state) to the console, and exits. Never touches the ICP. |
-| `--preview-ded` | Prints the ICP's big "MUTE" frame as ASCII art and exits. |
+| `--preview-ded` | Prints the ICP's big "MUTE" frame as ASCII art and exits (needs ICP support). |
+| `--exit` | Tells a running copy to exit cleanly (used by the installer and uninstaller). |
 
 ## Building
 
-Requires the .NET 8 SDK.
+Requires the .NET 8 SDK. The solution has three projects:
+
+- `src/ObsTurboMuteAlarm`: the app.
+- `src/ObsTurboMuteAlarm.Icp`: optional ICP plugin. The app loads `ObsTurboMuteAlarm.Icp.dll`
+  (and `HidSharp.dll`) from its own folder at runtime if present. Debug builds copy it next to
+  the app automatically.
+- `tests/ObsTurboMuteAlarm.Tests`.
 
 ```powershell
 dotnet build ObsTurboMuteAlarm.sln
 dotnet test ObsTurboMuteAlarm.sln
 
-# Single-file build that needs the .NET 8 Desktop Runtime:
-dotnet publish src\ObsTurboMuteAlarm -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o publish
-
-# Self-contained build (no runtime install needed, larger file):
-dotnet publish src\ObsTurboMuteAlarm -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish
+# Release installer (needs Inno Setup 6: winget install JRSoftware.InnoSetup):
+.\installer\build.ps1 -Version 1.0.0
+# -> artifacts\ObsTurboMuteAlarm-Setup-1.0.0.exe
 ```
+
+The installer script is `installer/ObsTurboMuteAlarm.iss`. `build.ps1` publishes the app as one
+self-contained exe, builds the ICP plugin, and compiles the installer.
 
 ## How it works
 
@@ -148,6 +174,6 @@ Not affiliated with OBS Project or WinWing.
 Public domain: [The Unlicense](LICENSE). Use, copy, modify, sell or redistribute it for any
 purpose, with no conditions and no attribution needed.
 
-The ICP code adapted from BmsLightBridge (`src/ObsTurboMuteAlarm/Icp/IcpHidDevice.cs`,
+The ICP code adapted from BmsLightBridge (`src/ObsTurboMuteAlarm.Icp/IcpHidDevice.cs`,
 `DedCommand.cs`, `IcpDisplay.cs`) stays under its original MIT License; keep that notice if you
 redistribute those files. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

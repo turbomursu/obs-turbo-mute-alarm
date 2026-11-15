@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
-using ObsTurboMuteAlarm.Icp;
 using ObsTurboMuteAlarm.Obs;
 using ObsTurboMuteAlarm.UI;
 using ObsTurboMuteAlarm.Warning;
@@ -24,7 +23,7 @@ internal sealed class TrayApp : ApplicationContext
     private AppSettings _settings;
     private volatile ObsMuteMonitor? _monitor;
     private string? _monitorKey;
-    private IcpDisplay? _icp;
+    private IIcpDisplay? _icp;
     private SettingsForm? _settingsForm;
     private ChooserForm? _chooserForm;
 
@@ -51,18 +50,23 @@ internal sealed class TrayApp : ApplicationContext
     private void Apply(AppSettings s, bool save)
     {
         if (save) s.Save(_settingsPath);
+        if (s.IcpEnabled && !IcpSupport.IsInstalled)
+        {
+            s = s.Clone();
+            s.IcpEnabled = false; // ICP support not installed
+        }
         _settings = s;
 
         if (s.IcpEnabled && _icp == null)
         {
-            _icp = new IcpDisplay();
+            _icp = IcpSupport.Plugin!.OpenDisplay();
             _icp.ConnectionChanged += _ => UpdateUi();
         }
 
         var style = new PopupStyle(s.PopupText, s.PopupPosition, s.PopupSize, s.PopupOpacityPercent, s.PopupClickThrough);
         var outputs = new List<IWarningOutput>();
         outputs.AddRange(s.Monitors.Select(m => new PopupOutput(_invoker, m, style)));
-        if (s.IcpEnabled) outputs.Add(new IcpOutput(_icp!, s.IcpWarningBrightness, s.IcpBrightnessAfterWarning));
+        if (s.IcpEnabled) outputs.Add(_icp!.CreateOutput(s.IcpWarningBrightness, s.IcpBrightnessAfterWarning));
         _controller.Configure(outputs, s.FlashIntervalMs);
 
         if (!s.IcpEnabled && _icp != null)
@@ -181,6 +185,12 @@ internal sealed class TrayApp : ApplicationContext
     }
 
     private void AddInfo(string text) => _menu.Items.Add(new ToolStripMenuItem(text) { Enabled = false });
+
+    /// <summary>Exits the app from any thread (used by <c>--exit</c>, e.g. from the installer).</summary>
+    public void RequestExit()
+    {
+        try { _invoker.BeginInvoke(ExitThread); } catch (InvalidOperationException) { }
+    }
 
     private static void OpenFile(string path)
     {

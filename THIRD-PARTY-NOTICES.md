@@ -4,7 +4,7 @@
 
 https://github.com/RedMeKool/BmsLightBridge
 
-Portions of `src/ObsTurboMuteAlarm/Icp/` (ICP HID protocol, DED commands) are adapted from
+Portions of `src/ObsTurboMuteAlarm.Icp/` (ICP HID protocol, DED commands) are adapted from
 BmsLightBridge. Those portions remain under the MIT License below; each adapted file also keeps
 this notice in its header.
 

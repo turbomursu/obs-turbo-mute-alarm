@@ -40,6 +40,7 @@ internal sealed class SettingsForm : Form
         _openChooser = openChooser;
 
         Text = $"{AppName} – Settings";
+        Icon = Program.AppIcon;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
@@ -97,7 +98,8 @@ internal sealed class SettingsForm : Form
         after.Controls.Add(_icpAfterEnabled);
         after.Controls.Add(_icpAfter);
         Row(icp, "", after);
-        root.Controls.Add(Group("WinWing ViperAce ICP (0–255)", icp));
+        if (IcpSupport.IsInstalled)
+            root.Controls.Add(Group("WinWing ViperAce ICP (0–255)", icp));
 
         root.Controls.Add(_startup);
 

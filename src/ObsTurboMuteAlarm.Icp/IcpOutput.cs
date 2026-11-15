@@ -1,6 +1,6 @@
-using ObsTurboMuteAlarm.Icp;
+using ObsTurboMuteAlarm.Warning;
 
-namespace ObsTurboMuteAlarm.Warning;
+namespace ObsTurboMuteAlarm.Icp;
 
 /// <summary>
 /// Shows the warning on the WinWing ViperAce ICP DED: a big "MUTE" alternating between

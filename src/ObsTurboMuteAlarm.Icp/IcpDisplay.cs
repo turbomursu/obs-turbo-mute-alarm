@@ -1,6 +1,8 @@
 // Connection handling pattern adapted from BmsLightBridge
 // (https://github.com/RedMeKool/BmsLightBridge), Services/Icp/IcpService.cs.
-// MIT License, Copyright (c) 2026 RedMeKool — see LICENSE for the full notice.
+// MIT License, Copyright (c) 2026 RedMeKool — see THIRD-PARTY-NOTICES.md for the full notice.
+
+using ObsTurboMuteAlarm.Warning;
 
 namespace ObsTurboMuteAlarm.Icp;
 
@@ -8,7 +10,7 @@ namespace ObsTurboMuteAlarm.Icp;
 /// Owns the ICP HID connection, reconnects automatically and re-sends the
 /// current frame after a reconnect. Thread-safe.
 /// </summary>
-internal sealed class IcpDisplay : IDisposable
+internal sealed class IcpDisplay : IIcpDisplay
 {
     private const int DevicePollMs = 2000;
 
@@ -97,6 +99,9 @@ internal sealed class IcpDisplay : IDisposable
         IsConnected = connected;
         ThreadPool.QueueUserWorkItem(_ => ConnectionChanged?.Invoke(connected));
     }
+
+    public IWarningOutput CreateOutput(byte warningBrightness, byte? brightnessAfter) =>
+        new IcpOutput(this, warningBrightness, brightnessAfter);
 
     public void Dispose()
     {

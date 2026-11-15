@@ -41,6 +41,7 @@ internal sealed class HelpForm : Form
     private HelpForm()
     {
         Text = $"{AppName} – Help";
+        Icon = Program.AppIcon;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         StartPosition = FormStartPosition.CenterScreen;
@@ -134,7 +135,7 @@ internal sealed class HelpForm : Form
               "2.  Click the tray icon to open Choose inputs and displays.\n" +
               "3.  Tick the audio inputs to watch, for example your microphone.\n" +
               "4.  Click the monitors where the warning should pop up (red = selected). " +
-              "Tick WinWing ViperAce ICP to flash it on the ICP too.\n" +
+              "If you installed ICP support, tick WinWing ViperAce ICP to flash it on the ICP too.\n" +
               "5.  Click Apply & test (5 s) to try it, then Save.\n", body, list);
         Write("\n", body);
 
@@ -146,9 +147,13 @@ internal sealed class HelpForm : Form
         Write("•  OBS: disconnected – check that OBS is running and the WebSocket server is enabled. " +
               "If OBS is on another PC or uses another port or password, set it in Settings.\n" +
               "•  ICP: not found – plug in the ICP. SimAppPro can keep running.\n" +
+              "•  ICP support not installed – run the installer again and tick WinWing ViperAce ICP support.\n" +
               "•  Input not listed – tick Show all sources with audio, or click Refresh.\n" +
               "•  More details are in the log (tray menu → Open log).\n", body, list);
         Write("\n", body);
+
+        Write("Uninstall\n", heading);
+        Write("Windows Settings → Apps → Installed apps → OBS Turbo Mute Alarm → Uninstall.\n\n", body);
 
         Write("Press F1 in any window to open this help.", body);
         box.SelectionStart = 0;

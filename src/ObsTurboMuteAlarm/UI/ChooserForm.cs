@@ -1,5 +1,4 @@
 using Microsoft.Win32;
-using ObsTurboMuteAlarm.Icp;
 using ObsTurboMuteAlarm.Obs;
 
 namespace ObsTurboMuteAlarm.UI;
@@ -43,6 +42,7 @@ internal sealed class ChooserForm : Form
         _openSettings = openSettings;
 
         Text = $"{AppName} – Choose inputs and displays";
+        Icon = Program.AppIcon;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         StartPosition = FormStartPosition.CenterScreen;
@@ -105,7 +105,9 @@ internal sealed class ChooserForm : Form
         monitorButtons.Controls.Add(_disconnected);
         displays.Controls.Add(monitorButtons);
         displays.Controls.Add(_icp);
-        displays.Controls.Add(Hint("Big flashing \"MUTE\" on the ICP's DED display at full backlight."));
+        displays.Controls.Add(Hint(IcpSupport.IsInstalled
+            ? "Big flashing \"MUTE\" on the ICP's DED display at full backlight."
+            : "To use a WinWing ICP, run the installer again and tick \"WinWing ViperAce ICP support\"."));
         columns.Controls.Add(Group("2. Displays", displays));
         root.Controls.Add(columns);
 
@@ -211,10 +213,15 @@ internal sealed class ChooserForm : Form
 
     private void UpdateIcpLabel()
     {
-        bool present;
-        try { present = IcpHidDevice.IsPresent(); }
-        catch { present = false; }
-        _icp.Text = $"WinWing ViperAce ICP  ({(present ? "connected" : "not found")})";
+        var plugin = IcpSupport.Plugin;
+        if (plugin == null)
+        {
+            _icp.Enabled = false;
+            _icp.Checked = false;
+            _icp.Text = "WinWing ViperAce ICP  (support not installed)";
+            return;
+        }
+        _icp.Text = $"WinWing ViperAce ICP  ({(plugin.IsDevicePresent() ? "connected" : "not found")})";
     }
 
     private void UpdateSummary()
