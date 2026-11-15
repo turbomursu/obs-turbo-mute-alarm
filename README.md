@@ -14,6 +14,8 @@ muted, a big flashing **MUTED** warning appears on the outputs you choose:
 
 The warning disappears as soon as every watched source is unmuted.
 
+> **100% vibe coded in Claude Opus 5.5. Use entirely at your own risk.**
+
 ## Features
 
 - Connects to OBS's built-in WebSocket server (OBS 28 or later) and reacts to mute changes

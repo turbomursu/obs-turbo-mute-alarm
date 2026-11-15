@@ -126,6 +126,8 @@ internal sealed class HelpForm : Form
         Write($"{AppName}\n", title);
         Write("Never stream or record in silence again. When an OBS audio input you choose is muted, " +
               "a big flashing MUTED warning appears on your monitor and/or the WinWing ICP display.\n\n", body);
+        Write("100% vibe coded in Claude Opus 5.5. Use entirely at your own risk.\n\n",
+              new Font(body, FontStyle.Bold | FontStyle.Italic));
 
         Write("Quick start\n", heading);
         Write("1.  In OBS, open Tools → WebSocket Server Settings and tick Enable WebSocket server.\n" +
