@@ -175,6 +175,7 @@ internal sealed class TrayApp : ApplicationContext
         _menu.Items.Add("Settings…", null, (_, _) => OpenSettings());
         _menu.Items.Add("Show test warning (5 s)", null, (_, _) => _controller.ShowTest(TimeSpan.FromSeconds(5)));
         _menu.Items.Add("Open log", null, (_, _) => OpenFile(Log.FilePath));
+        _menu.Items.Add("Help…", null, (_, _) => HelpForm.ShowHelp());
         _menu.Items.Add(new ToolStripSeparator());
         _menu.Items.Add("Exit", null, (_, _) => ExitThread());
     }

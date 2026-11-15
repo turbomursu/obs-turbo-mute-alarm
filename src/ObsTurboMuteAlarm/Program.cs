@@ -50,7 +50,9 @@ internal static class Program
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
         Application.ThreadException += (_, e) => Log.Info($"Unhandled UI error: {e.Exception}");
         Log.Info("Started.");
-        Application.Run(new TrayApp(settings, path, firstRun: !existed, showTestWarning: Flag("--test")));
+        var app = new TrayApp(settings, path, firstRun: !existed, showTestWarning: Flag("--test"));
+        if (Flag("--help")) UI.HelpForm.ShowHelp();
+        Application.Run(app);
         return 0;
     }
 

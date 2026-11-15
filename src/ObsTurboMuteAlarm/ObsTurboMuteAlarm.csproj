@@ -11,6 +11,7 @@
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <Version>1.0.0</Version>
     <Product>OBS Turbo Mute Alarm</Product>
+    <Company>Mursu-soft</Company>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,10 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="ObsTurboMuteAlarm.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\mursu-soft.png" LogicalName="ObsTurboMuteAlarm.Resources.mursu-soft.png" />
   </ItemGroup>
 
 </Project>

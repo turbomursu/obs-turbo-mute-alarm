@@ -51,6 +51,7 @@ internal sealed class SettingsForm : Form
         Padding = new Padding(8);
 
         BuildLayout();
+        HelpForm.AttachF1(this);
         LoadValues(current());
 
         _testConnection.Click += async (_, _) => await TestConnectionAsync();
@@ -104,9 +105,11 @@ internal sealed class SettingsForm : Form
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true };
         var ok = new Button { Text = "Save", AutoSize = true };
         var test = new Button { Text = "Apply && test (5 s)", AutoSize = true };
+        var help = new Button { Text = "Help", AutoSize = true };
         ok.Click += (_, _) => { if (ApplyValues()) Close(); };
         test.Click += (_, _) => { if (ApplyValues()) _test(); };
-        buttons.Controls.AddRange(new Control[] { cancel, ok, test });
+        help.Click += (_, _) => HelpForm.ShowHelp();
+        buttons.Controls.AddRange(new Control[] { cancel, ok, test, help });
         root.Controls.Add(buttons);
         AcceptButton = ok;
         CancelButton = cancel;

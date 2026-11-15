@@ -53,6 +53,7 @@ internal sealed class ChooserForm : Form
         Padding = new Padding(8);
 
         BuildLayout();
+        HelpForm.AttachF1(this);
         var s = current();
         foreach (var w in s.Sources)
             _sources.Items.Add(new SourceItem(w.Name, w.Uuid, $"{w}   (connecting…)"), true);
@@ -116,9 +117,11 @@ internal sealed class ChooserForm : Form
         var test = new Button { Text = "Apply && test (5 s)", AutoSize = true };
         var save = new Button { Text = "Save", AutoSize = true };
         var cancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, AutoSize = true };
+        var help = new Button { Text = "Help", AutoSize = true };
         test.Click += (_, _) => { if (ApplyValues(confirm: false)) _test(); };
         save.Click += (_, _) => { if (ApplyValues(confirm: true)) Close(); };
-        buttons.Controls.AddRange(new Control[] { test, save, cancel });
+        help.Click += (_, _) => HelpForm.ShowHelp();
+        buttons.Controls.AddRange(new Control[] { help, test, save, cancel });
         bottom.Controls.Add(buttons);
         root.Controls.Add(bottom);
 

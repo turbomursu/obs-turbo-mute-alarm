@@ -1,7 +1,9 @@
 # OBS Turbo Mute Alarm
 
-A small Windows tray app that warns you when an OBS audio source is muted, so you don't
-stream or record half an hour of silence.
+<p align="center"><img src="src/ObsTurboMuteAlarm/Resources/mursu-soft.png" alt="Mursu-soft" width="280"></p>
+
+A small Windows tray app by **Mursu-soft** that warns you when an OBS audio source is muted, so
+you don't stream or record half an hour of silence.
 
 Pick any OBS audio sources (microphone, desktop audio, game audio, …). If **any** of them is
 muted, a big flashing **MUTED** warning appears on the outputs you choose:
@@ -60,7 +62,10 @@ The warning disappears as soon as every watched source is unmuted.
 
 The app then lives in the system tray. Click the tray icon to open **Choose inputs and
 displays**. Right-click it for Settings (OBS connection, popup look, ICP brightness, start with
-Windows), the 5-second test, the log, and Exit.
+Windows), the 5-second test, the log, Help, and Exit.
+
+**Help:** right-click the tray icon → **Help…**, click **Help** in either window, or press
+**F1**. The Help window has short setup and troubleshooting instructions.
 
 ## Settings
 
@@ -100,6 +105,7 @@ The log is `%LOCALAPPDATA%\ObsTurboMuteAlarm\log.txt`.
 | Option | What it does |
 | --- | --- |
 | `--test` | Starts normally and shows the warning for 5 seconds on the configured outputs. |
+| `--help` | Starts normally and opens the Help window. |
 | `--check-obs` | Connects to OBS once, prints every source with audio (with UUID and mute state) to the console, and exits. Never touches the ICP. |
 | `--preview-ded` | Prints the ICP's big "MUTE" frame as ASCII art and exits. |
 
@@ -130,11 +136,16 @@ dotnet publish src\ObsTurboMuteAlarm -c Release -r win-x64 --self-contained true
 
 - WinWing ICP / DED HID protocol code adapted from
   [BmsLightBridge](https://github.com/RedMeKool/BmsLightBridge) by RedMeKool (MIT License). See
-  [LICENSE](LICENSE).
+  [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 - [HidSharp](https://www.zer7.com/software/hidsharp) for USB HID access.
 
 Not affiliated with OBS Project or WinWing.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+Public domain: [The Unlicense](LICENSE). Use, copy, modify, sell or redistribute it for any
+purpose, with no conditions and no attribution needed.
+
+The ICP code adapted from BmsLightBridge (`src/ObsTurboMuteAlarm/Icp/IcpHidDevice.cs`,
+`DedCommand.cs`, `IcpDisplay.cs`) stays under its original MIT License; keep that notice if you
+redistribute those files. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
