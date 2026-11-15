@@ -25,7 +25,9 @@ The warning disappears as soon as every watched source is unmuted.
 - The popup shows which sources are muted.
 - WinWing ICP output talks to the device directly over USB HID. It works with SimAppPro running
   or closed.
-- Everything is set up in a Settings window; there's no need to edit files.
+- Inputs and displays are picked in one window: tick the audio inputs and click your monitors on
+  a map of your real monitor layout. Other options are in Settings; there's no need to edit
+  files.
 - Optional "Start with Windows".
 
 ## Requirements
@@ -41,26 +43,32 @@ The warning disappears as soon as every watched source is unmuted.
 1. **Enable the OBS WebSocket server.** In OBS, open **Tools → WebSocket Server Settings**, tick
    **Enable WebSocket server**, and note the port (default `4455`). If authentication is on, also
    note the password.
-2. **Start `ObsMuteWarning.exe`.** On first start the Settings window opens.
-3. **OBS WebSocket.** Host `127.0.0.1` and port `4455` work for OBS on the same PC. You can
-   leave the password empty: the app then reads it from this PC's OBS settings
-   (`%APPDATA%\obs-studio\plugin_config\obs-websocket\config.json`). Click
-   **Connect & list sources**.
-4. **Audio sources.** Tick the sources to watch. The list shows microphones, desktop audio and
+2. **Start `ObsMuteWarning.exe`.** On first start the **Choose inputs and displays** window
+   opens and connects to OBS. Host `127.0.0.1`, port `4455` and the password from this PC's OBS
+   settings (`%APPDATA%\obs-studio\plugin_config\obs-websocket\config.json`) are used
+   automatically. If OBS runs on another PC or uses a different port or password, click
+   **OBS connection settings…**.
+3. **1. Audio inputs.** Tick the inputs to watch. The list shows microphones, desktop audio and
    application audio capture sources, plus whether each is live or muted right now. Tick
    **Show all sources with audio** to also list media, browser and game-capture sources.
-5. **Warning appears on.** Tick one or more monitors and/or **WinWing ViperAce ICP**.
-   **Identify monitors** shows each monitor's number on the screen itself.
-6. Adjust the popup and ICP options if you like. Click **Apply & test (5 s)** to see the
-   warning, then **Save**.
+4. **2. Displays.** Your monitors are drawn in the same arrangement as in Windows display
+   settings. Click a monitor to select it (red = the warning pops up there); click it again to
+   deselect it. **Identify monitors** shows each monitor's number on the screen itself. Tick
+   **WinWing ViperAce ICP** to also flash the warning on the ICP; the window shows whether the
+   ICP is connected.
+5. Click **Apply & test (5 s)** to see the warning, then **Save**.
 
-The app then lives in the system tray. Double-click the tray icon to open Settings, or
-right-click it for the 5-second test, the log, and Exit.
+The app then lives in the system tray. Click the tray icon to open **Choose inputs and
+displays**. Right-click it for Settings (OBS connection, popup look, ICP brightness, start with
+Windows), the 5-second test, the log, and Exit.
 
 ## Settings
 
+Right-click the tray icon → **Settings…**:
+
 | Setting | Meaning |
 | --- | --- |
+| Host / Port / Password | OBS WebSocket connection. Leave the password empty to use the one from this PC's OBS settings. |
 | Popup text | Big text in the popup (default `MUTED`). The muted source names are shown below it. |
 | Position | Where on the monitor the popup appears: one of 9 positions (default top centre). |
 | Size | Small, Medium or Large, relative to the monitor size. |

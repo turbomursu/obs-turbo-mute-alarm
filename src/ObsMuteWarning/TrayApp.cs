@@ -26,6 +26,7 @@ internal sealed class TrayApp : ApplicationContext
     private string? _monitorKey;
     private IcpDisplay? _icp;
     private SettingsForm? _settingsForm;
+    private ChooserForm? _chooserForm;
 
     public TrayApp(AppSettings settings, string settingsPath, bool firstRun, bool showTestWarning)
     {
@@ -35,13 +36,13 @@ internal sealed class TrayApp : ApplicationContext
         _ = _invoker.Handle; // create the handle so BeginInvoke works
 
         _tray = new NotifyIcon { Icon = _iconOffline, Text = AppName, Visible = true, ContextMenuStrip = _menu };
-        _tray.DoubleClick += (_, _) => OpenSettings();
+        _tray.MouseClick += (_, e) => { if (e.Button == MouseButtons.Left) OpenChooser(); };
         _controller = new WarningController(settings.FlashIntervalMs);
 
         Apply(settings, save: false);
 
         if (firstRun)
-            _invoker.BeginInvoke(OpenSettings);
+            _invoker.BeginInvoke(OpenChooser);
         if (showTestWarning)
             _controller.ShowTest(TimeSpan.FromSeconds(5));
     }
@@ -104,17 +105,35 @@ internal sealed class TrayApp : ApplicationContext
             _settingsForm.Activate();
             return;
         }
-        _settingsForm = new SettingsForm(_settings,
+        _settingsForm = new SettingsForm(() => _settings,
             s => Apply(s, save: true),
-            () => _controller.ShowTest(TimeSpan.FromSeconds(5)));
+            () => _controller.ShowTest(TimeSpan.FromSeconds(5)),
+            OpenChooser);
         _settingsForm.FormClosed += (_, _) => _settingsForm = null;
         _settingsForm.Show();
         _settingsForm.Activate();
     }
 
-    private static string DescribeOutputs(AppSettings s)
+    private void OpenChooser()
     {
-        var parts = s.Monitors.Select(m => $"Monitor {SettingsForm.MonitorNumber(m)}").ToList();
+        if (_chooserForm is { IsDisposed: false })
+        {
+            if (_chooserForm.WindowState == FormWindowState.Minimized) _chooserForm.WindowState = FormWindowState.Normal;
+            _chooserForm.Activate();
+            return;
+        }
+        _chooserForm = new ChooserForm(() => _settings,
+            s => Apply(s, save: true),
+            () => _controller.ShowTest(TimeSpan.FromSeconds(5)),
+            OpenSettings);
+        _chooserForm.FormClosed += (_, _) => _chooserForm = null;
+        _chooserForm.Show();
+        _chooserForm.Activate();
+    }
+
+    internal static string DescribeOutputs(AppSettings s)
+    {
+        var parts = s.Monitors.Select(m => $"Monitor {MonitorPicker.MonitorNumber(m)}").ToList();
         if (s.IcpEnabled) parts.Add("ICP");
         return parts.Count == 0 ? "none" : string.Join(", ", parts);
     }
@@ -152,7 +171,8 @@ internal sealed class TrayApp : ApplicationContext
         AddInfo($"Warning on: {DescribeOutputs(_settings)}");
         if (icpLine != null) AddInfo(icpLine);
         _menu.Items.Add(new ToolStripSeparator());
-        _menu.Items.Add(new ToolStripMenuItem("Settings…", null, (_, _) => OpenSettings()) { Font = new Font(_menu.Font, FontStyle.Bold) });
+        _menu.Items.Add(new ToolStripMenuItem("Choose inputs and displays…", null, (_, _) => OpenChooser()) { Font = new Font(_menu.Font, FontStyle.Bold) });
+        _menu.Items.Add("Settings…", null, (_, _) => OpenSettings());
         _menu.Items.Add("Show test warning (5 s)", null, (_, _) => _controller.ShowTest(TimeSpan.FromSeconds(5)));
         _menu.Items.Add("Open log", null, (_, _) => OpenFile(Log.FilePath));
         _menu.Items.Add(new ToolStripSeparator());
@@ -178,6 +198,7 @@ internal sealed class TrayApp : ApplicationContext
         Log.Info("Exiting.");
         _tray.Visible = false;
         _settingsForm?.Close();
+        _chooserForm?.Close();
         _monitor?.Dispose();
         _controller.Dispose();
         _icp?.Dispose(); // blanks the DED
