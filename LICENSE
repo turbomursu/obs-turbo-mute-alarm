@@ -22,7 +22,7 @@ SOFTWARE.
 
 --------------------------------------------------------------------------------
 Third-party notice: BmsLightBridge (https://github.com/RedMeKool/BmsLightBridge)
-Portions of src/ObsMuteWarning/Icp/ are adapted from BmsLightBridge.
+Portions of src/ObsTurboMuteAlarm/Icp/ are adapted from BmsLightBridge.
 
 MIT License
 

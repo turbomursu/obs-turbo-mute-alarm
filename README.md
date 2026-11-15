@@ -1,4 +1,4 @@
-# OBS Mute Warning
+# OBS Turbo Mute Alarm
 
 A small Windows tray app that warns you when an OBS audio source is muted, so you don't
 stream or record half an hour of silence.
@@ -43,7 +43,7 @@ The warning disappears as soon as every watched source is unmuted.
 1. **Enable the OBS WebSocket server.** In OBS, open **Tools → WebSocket Server Settings**, tick
    **Enable WebSocket server**, and note the port (default `4455`). If authentication is on, also
    note the password.
-2. **Start `ObsMuteWarning.exe`.** On first start the **Choose inputs and displays** window
+2. **Start `ObsTurboMuteAlarm.exe`.** On first start the **Choose inputs and displays** window
    opens and connects to OBS. Host `127.0.0.1`, port `4455` and the password from this PC's OBS
    settings (`%APPDATA%\obs-studio\plugin_config\obs-websocket\config.json`) are used
    automatically. If OBS runs on another PC or uses a different port or password, click
@@ -78,11 +78,11 @@ Right-click the tray icon → **Settings…**:
 | ICP backlight while flashing | DED backlight level 0–255 while warning (default 255 = max). |
 | After the warning, set backlight to | Optionally set this DED backlight level when the warning ends. Leave unticked to keep the level the warning used. |
 
-Settings are stored in `%APPDATA%\ObsMuteWarning\settings.json`. If you type an OBS password, it
+Settings are stored in `%APPDATA%\ObsTurboMuteAlarm\settings.json`. If you type an OBS password, it
 is stored encrypted with Windows DPAPI, readable only by your Windows account. The password is
 never written to the log.
 
-The log is `%LOCALAPPDATA%\ObsMuteWarning\log.txt`.
+The log is `%LOCALAPPDATA%\ObsTurboMuteAlarm\log.txt`.
 
 ## Notes
 
@@ -108,14 +108,14 @@ The log is `%LOCALAPPDATA%\ObsMuteWarning\log.txt`.
 Requires the .NET 8 SDK.
 
 ```powershell
-dotnet build ObsMuteWarning.sln
-dotnet test ObsMuteWarning.sln
+dotnet build ObsTurboMuteAlarm.sln
+dotnet test ObsTurboMuteAlarm.sln
 
 # Single-file build that needs the .NET 8 Desktop Runtime:
-dotnet publish src\ObsMuteWarning -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o publish
+dotnet publish src\ObsTurboMuteAlarm -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o publish
 
 # Self-contained build (no runtime install needed, larger file):
-dotnet publish src\ObsMuteWarning -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish
+dotnet publish src\ObsTurboMuteAlarm -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish
 ```
 
 ## How it works
